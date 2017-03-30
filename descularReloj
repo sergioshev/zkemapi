@@ -1,0 +1,25 @@
+#!/bin/bash
+
+decodificar_timestamp () {
+  codificado=$1
+  segundos=$(($codificado%60))
+  codificado=$(($codificado/60))
+  minutos=$(($codificado%60))
+  codificado=$(($codificado/60))
+  horas=$(($codificado%24))
+  codificado=$(($codificado/24))
+  dia=$(($codificado%31+1))
+  codificado=$(($codificado/31))
+  mes=$(($codificado%12+1))
+  codificado=$(($codificado/12))
+  anio=$(($codificado+2000))
+  echo "$anio-$mes-$dia $horas:$minutos:$segundos"
+}
+
+I=4 ;
+while [ $I -lt $(stat -c "%s" salida.bin) ] ; do
+  decodificar_timestamp $(od -An -j$(($I+27)) -N4 -td4 salida.bin)
+  od -j $(($I)) -N 40 -tx1 salida.bin
+  I=$(($I+40))
+  echo "================"
+done
